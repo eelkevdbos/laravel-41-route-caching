@@ -82,29 +82,21 @@ class Route extends LaravelRoute
      */
     protected function compileRoute()
     {
-        if ($this->shouldCompile() === false) {
-            return;
-        }
-
-        if ($this->compiled === null) {
+        if ($this->shouldCompile() === true && $this->compiled === null) {
             parent::compileRoute();
         }
     }
 
     /**
-     * Set a regular expression requirement on the route.
+     * Prepare to go to sleep. Compiles the route so that doesn't have to happen
+     * on every subsequent request.
      *
-     * @param  array|string              $name
-     * @param  string|null               $expression
-     * @return \Illuminate\Routing\Route
+     * @return array<string>
      */
-    public function where($name, $expression = null)
+    public function __sleep()
     {
-        parent::where($name, $expression);
-
-        // We now have enough information to compile the route.
         $this->compileRoute();
 
-        return $this;
+        return array_keys(get_object_vars($this));
     }
 }
